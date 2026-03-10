@@ -1,0 +1,653 @@
+// ============================================================
+// FINMATRIX - Deliveries Dummy Data  (20 records)
+// ============================================================
+// Pre-loaded deliveries referencing 3 warehouse agencies:
+//   Dalda (cooking oil, ghee, margarine)
+//   AquaPure (mineral water, dispenser, filter)
+//   SparkClean (detergent, bleach, dishwash)
+//
+// Distribution:
+//   5 unassigned (mix of Dalda, AquaPure, SparkClean items)
+//   5 assigned to dp_001 (Imran)  → status "pending"
+//   3 assigned to dp_002 (Hassan) → status "in_transit"
+//   4 assigned to dp_004 (Ali)    → status "delivered" (signed + verified)
+//   2 assigned to dp_005 (Kamran) → status "failed"
+//   1 assigned to dp_002 (Hassan) → status "returned"
+
+export interface DeliveryAddress {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
+
+export interface DeliveryLineItem {
+  itemId: string;
+  itemName: string;
+  quantity: number;
+  description: string;
+}
+
+export type DeliveryStatus =
+  | 'unassigned'
+  | 'pending'
+  | 'picked_up'
+  | 'in_transit'
+  | 'arrived'
+  | 'delivered'
+  | 'failed'
+  | 'returned';
+
+export type DeliveryPriority = 'normal' | 'high' | 'urgent';
+
+export interface GeoCoord {
+  latitude: number;
+  longitude: number;
+}
+
+export interface Delivery {
+  deliveryId: string;
+  companyId: string;
+  assignmentId: string | null;
+  customerId: string;
+  customerName: string;
+  customerAddress: DeliveryAddress;
+  customerPhone: string;
+  items: DeliveryLineItem[];
+  status: DeliveryStatus;
+  deliveryPersonId: string | null;
+  deliveryPersonName: string | null;
+  priority: DeliveryPriority;
+  signatureUrl: string | null;
+  signedAt: string | null;
+  customerVerified: boolean;
+  customerVerifiedAt: string | null;
+  notes: string;
+  photoUrls: string[];
+  deliveredAt: string | null;
+  createdAt: string;
+  originCoords: GeoCoord;
+  destinationCoords: GeoCoord;
+  estimatedMinutes?: number;
+}
+
+// Karachi coords hub (Dalda warehouse area)
+const ORIGIN: GeoCoord = { latitude: 24.8607, longitude: 67.0011 };
+
+export const deliveries: Delivery[] = [
+  // ═══ UNASSIGNED (5) ═══════════════════════════════════════
+  {
+    deliveryId: 'del_001',
+    companyId: 'company_1',
+    assignmentId: null,
+    customerId: 'cust_001',
+    customerName: 'Karachi Mart',
+    customerAddress: { street: 'Shop 5, Tariq Road', city: 'Karachi', state: 'Sindh', zipCode: '75400' },
+    customerPhone: '+92-21-34567890',
+    items: [
+      { itemId: 'dalda_001', itemName: 'Dalda Cooking Oil 1L', quantity: 20, description: 'Monthly restock' },
+      { itemId: 'dalda_003', itemName: 'Dalda Banaspati Ghee 1kg', quantity: 10, description: 'New order' },
+    ],
+    status: 'unassigned',
+    deliveryPersonId: null,
+    deliveryPersonName: null,
+    priority: 'high',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Call before delivery',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T08:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 24.8700, longitude: 67.0300 },
+    estimatedMinutes: 25,
+  },
+  {
+    deliveryId: 'del_002',
+    companyId: 'company_1',
+    assignmentId: null,
+    customerId: 'cust_002',
+    customerName: 'FreshCo Superstore',
+    customerAddress: { street: '12-B, Shahrah-e-Faisal', city: 'Karachi', state: 'Sindh', zipCode: '75350' },
+    customerPhone: '+92-21-38901234',
+    items: [
+      { itemId: 'aqua_001', itemName: 'AquaPure Mineral Water 1.5L (Pack of 6)', quantity: 50, description: 'Weekly supply' },
+      { itemId: 'aqua_002', itemName: 'AquaPure Water Dispenser', quantity: 3, description: 'New outlets' },
+    ],
+    status: 'unassigned',
+    deliveryPersonId: null,
+    deliveryPersonName: null,
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Deliver to back entrance',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T08:15:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 24.8530, longitude: 67.0280 },
+    estimatedMinutes: 20,
+  },
+  {
+    deliveryId: 'del_003',
+    companyId: 'company_1',
+    assignmentId: null,
+    customerId: 'cust_003',
+    customerName: 'Lahore General Store',
+    customerAddress: { street: '45 Mall Road', city: 'Lahore', state: 'Punjab', zipCode: '54000' },
+    customerPhone: '+92-42-37654321',
+    items: [
+      { itemId: 'spark_001', itemName: 'SparkClean Detergent 2kg', quantity: 30, description: 'Bulk order' },
+      { itemId: 'spark_002', itemName: 'SparkClean Bleach 1L', quantity: 20, description: 'Cleaning supplies' },
+      { itemId: 'dalda_002', itemName: 'Dalda Cooking Oil 5L', quantity: 8, description: 'Add-on' },
+    ],
+    status: 'unassigned',
+    deliveryPersonId: null,
+    deliveryPersonName: null,
+    priority: 'urgent',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Urgent — store running low',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T07:30:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 31.5204, longitude: 74.3587 },
+    estimatedMinutes: 45,
+  },
+  {
+    deliveryId: 'del_004',
+    companyId: 'company_1',
+    assignmentId: null,
+    customerId: 'cust_004',
+    customerName: 'Islamabad Wholesale',
+    customerAddress: { street: 'Plot 7, I-8 Markaz', city: 'Islamabad', state: 'ICT', zipCode: '44000' },
+    customerPhone: '+92-51-2345678',
+    items: [
+      { itemId: 'aqua_003', itemName: 'AquaPure Water Filter Cartridge', quantity: 15, description: 'Replacement filters' },
+      { itemId: 'spark_003', itemName: 'SparkClean Dishwash Liquid 750ml', quantity: 40, description: 'Monthly order' },
+    ],
+    status: 'unassigned',
+    deliveryPersonId: null,
+    deliveryPersonName: null,
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: '',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T09:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 33.6844, longitude: 73.0479 },
+    estimatedMinutes: 60,
+  },
+  {
+    deliveryId: 'del_005',
+    companyId: 'company_1',
+    assignmentId: null,
+    customerId: 'cust_005',
+    customerName: 'Multan Cash & Carry',
+    customerAddress: { street: 'Nishtar Road, Near Clock Tower', city: 'Multan', state: 'Punjab', zipCode: '60000' },
+    customerPhone: '+92-61-4567890',
+    items: [
+      { itemId: 'dalda_001', itemName: 'Dalda Cooking Oil 1L', quantity: 40, description: 'Bulk restock' },
+      { itemId: 'dalda_003', itemName: 'Dalda Banaspati Ghee 1kg', quantity: 25, description: 'High demand' },
+      { itemId: 'aqua_001', itemName: 'AquaPure Mineral Water 1.5L (Pack of 6)', quantity: 30, description: 'Summer stock' },
+    ],
+    status: 'unassigned',
+    deliveryPersonId: null,
+    deliveryPersonName: null,
+    priority: 'high',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Large order - send truck',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T09:30:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 30.1575, longitude: 71.5249 },
+    estimatedMinutes: 90,
+  },
+
+  // ═══ PENDING — assigned to dp_001 (Imran Sheikh) (5) ═════
+  {
+    deliveryId: 'del_006',
+    companyId: 'company_1',
+    assignmentId: 'asgn_006',
+    customerId: 'cust_006',
+    customerName: 'Sadar Bazaar Traders',
+    customerAddress: { street: 'Shop 22, Saddar', city: 'Karachi', state: 'Sindh', zipCode: '74400' },
+    customerPhone: '+92-21-35111222',
+    items: [
+      { itemId: 'dalda_001', itemName: 'Dalda Cooking Oil 1L', quantity: 15, description: 'Weekly supply' },
+      { itemId: 'spark_001', itemName: 'SparkClean Detergent 2kg', quantity: 10, description: 'Cleaning aisle' },
+    ],
+    status: 'pending',
+    deliveryPersonId: 'dp_001',
+    deliveryPersonName: 'Imran Sheikh',
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Ring bell twice',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T07:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 24.8560, longitude: 67.0190 },
+    estimatedMinutes: 15,
+  },
+  {
+    deliveryId: 'del_007',
+    companyId: 'company_1',
+    assignmentId: 'asgn_007',
+    customerId: 'cust_007',
+    customerName: 'Clifton Mini Mart',
+    customerAddress: { street: 'Block 5, Clifton', city: 'Karachi', state: 'Sindh', zipCode: '75600' },
+    customerPhone: '+92-21-35862222',
+    items: [
+      { itemId: 'aqua_001', itemName: 'AquaPure Mineral Water 1.5L (Pack of 6)', quantity: 25, description: 'Daily supply' },
+    ],
+    status: 'pending',
+    deliveryPersonId: 'dp_001',
+    deliveryPersonName: 'Imran Sheikh',
+    priority: 'high',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Entrance from side street',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T07:15:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 24.8138, longitude: 67.0300 },
+    estimatedMinutes: 30,
+  },
+  {
+    deliveryId: 'del_008',
+    companyId: 'company_1',
+    assignmentId: 'asgn_008',
+    customerId: 'cust_008',
+    customerName: 'Defence Grocery',
+    customerAddress: { street: 'Phase 6, DHA', city: 'Karachi', state: 'Sindh', zipCode: '75500' },
+    customerPhone: '+92-21-35340000',
+    items: [
+      { itemId: 'dalda_002', itemName: 'Dalda Cooking Oil 5L', quantity: 12, description: 'Monthly restock' },
+      { itemId: 'dalda_003', itemName: 'Dalda Banaspati Ghee 1kg', quantity: 8, description: 'Regular order' },
+      { itemId: 'spark_003', itemName: 'SparkClean Dishwash Liquid 750ml', quantity: 20, description: 'Kitchen supplies' },
+    ],
+    status: 'pending',
+    deliveryPersonId: 'dp_001',
+    deliveryPersonName: 'Imran Sheikh',
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: '',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T06:45:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 24.7916, longitude: 67.0645 },
+    estimatedMinutes: 35,
+  },
+  {
+    deliveryId: 'del_009',
+    companyId: 'company_1',
+    assignmentId: 'asgn_009',
+    customerId: 'cust_009',
+    customerName: 'Gulshan Provision Store',
+    customerAddress: { street: 'Block 13-A, Gulshan-e-Iqbal', city: 'Karachi', state: 'Sindh', zipCode: '75300' },
+    customerPhone: '+92-21-34821111',
+    items: [
+      { itemId: 'spark_002', itemName: 'SparkClean Bleach 1L', quantity: 15, description: 'Cleaning products' },
+      { itemId: 'aqua_002', itemName: 'AquaPure Water Dispenser', quantity: 2, description: 'Office use' },
+    ],
+    status: 'pending',
+    deliveryPersonId: 'dp_001',
+    deliveryPersonName: 'Imran Sheikh',
+    priority: 'urgent',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Customer will be available after 2 PM only',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T06:30:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 24.9200, longitude: 67.0900 },
+    estimatedMinutes: 20,
+  },
+  {
+    deliveryId: 'del_010',
+    companyId: 'company_1',
+    assignmentId: 'asgn_010',
+    customerId: 'cust_010',
+    customerName: 'North Nazimabad Wholesale',
+    customerAddress: { street: 'Block H, North Nazimabad', city: 'Karachi', state: 'Sindh', zipCode: '74700' },
+    customerPhone: '+92-21-36631111',
+    items: [
+      { itemId: 'dalda_001', itemName: 'Dalda Cooking Oil 1L', quantity: 30, description: 'Wholesale order' },
+      { itemId: 'aqua_003', itemName: 'AquaPure Water Filter Cartridge', quantity: 10, description: 'New stock' },
+    ],
+    status: 'pending',
+    deliveryPersonId: 'dp_001',
+    deliveryPersonName: 'Imran Sheikh',
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: '',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T06:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 24.9420, longitude: 67.0340 },
+    estimatedMinutes: 22,
+  },
+
+  // ═══ IN_TRANSIT — assigned to dp_002 (Hassan Raza) (3) ═══
+  {
+    deliveryId: 'del_011',
+    companyId: 'company_1',
+    assignmentId: 'asgn_011',
+    customerId: 'cust_011',
+    customerName: 'Faisal Town Supermarket',
+    customerAddress: { street: 'Near Faisal Town Bridge', city: 'Lahore', state: 'Punjab', zipCode: '54770' },
+    customerPhone: '+92-42-35431111',
+    items: [
+      { itemId: 'dalda_003', itemName: 'Dalda Banaspati Ghee 1kg', quantity: 20, description: 'Bulk ghee order' },
+      { itemId: 'dalda_002', itemName: 'Dalda Cooking Oil 5L', quantity: 10, description: 'Large tins' },
+    ],
+    status: 'in_transit',
+    deliveryPersonId: 'dp_002',
+    deliveryPersonName: 'Hassan Raza',
+    priority: 'high',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Hassan picked up at 10 AM — ETA 11:30 AM',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T05:30:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 31.4504, longitude: 74.3287 },
+    estimatedMinutes: 40,
+  },
+  {
+    deliveryId: 'del_012',
+    companyId: 'company_1',
+    assignmentId: 'asgn_012',
+    customerId: 'cust_012',
+    customerName: 'Model Town Pharmacy',
+    customerAddress: { street: 'C-Block, Model Town', city: 'Lahore', state: 'Punjab', zipCode: '54700' },
+    customerPhone: '+92-42-35166666',
+    items: [
+      { itemId: 'aqua_001', itemName: 'AquaPure Mineral Water 1.5L (Pack of 6)', quantity: 40, description: 'Pharmacy stock' },
+      { itemId: 'spark_003', itemName: 'SparkClean Dishwash Liquid 750ml', quantity: 15, description: 'Hygiene section' },
+    ],
+    status: 'in_transit',
+    deliveryPersonId: 'dp_002',
+    deliveryPersonName: 'Hassan Raza',
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: '',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T05:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 31.4804, longitude: 74.3167 },
+    estimatedMinutes: 45,
+  },
+  {
+    deliveryId: 'del_013',
+    companyId: 'company_1',
+    assignmentId: 'asgn_013',
+    customerId: 'cust_013',
+    customerName: 'Johar Town Grocers',
+    customerAddress: { street: 'Block J, Johar Town', city: 'Lahore', state: 'Punjab', zipCode: '54790' },
+    customerPhone: '+92-42-35222333',
+    items: [
+      { itemId: 'spark_001', itemName: 'SparkClean Detergent 2kg', quantity: 25, description: 'Restocking' },
+      { itemId: 'spark_002', itemName: 'SparkClean Bleach 1L', quantity: 18, description: 'Regular supply' },
+    ],
+    status: 'in_transit',
+    deliveryPersonId: 'dp_002',
+    deliveryPersonName: 'Hassan Raza',
+    priority: 'urgent',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Urgent — customer ran out of stock',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-07T04:30:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 31.4620, longitude: 74.2960 },
+    estimatedMinutes: 50,
+  },
+
+  // ═══ DELIVERED — assigned to dp_004 (Ali Abbas) (4) ═══════
+  {
+    deliveryId: 'del_014',
+    companyId: 'company_1',
+    assignmentId: 'asgn_014',
+    customerId: 'cust_014',
+    customerName: 'Blue Area Mart',
+    customerAddress: { street: 'F-6 Markaz, Blue Area', city: 'Islamabad', state: 'ICT', zipCode: '44000' },
+    customerPhone: '+92-51-2873333',
+    items: [
+      { itemId: 'dalda_001', itemName: 'Dalda Cooking Oil 1L', quantity: 25, description: 'Islamabad outlet' },
+      { itemId: 'dalda_003', itemName: 'Dalda Banaspati Ghee 1kg', quantity: 15, description: 'Regular' },
+      { itemId: 'aqua_001', itemName: 'AquaPure Mineral Water 1.5L (Pack of 6)', quantity: 20, description: 'Water supply' },
+    ],
+    status: 'delivered',
+    deliveryPersonId: 'dp_004',
+    deliveryPersonName: 'Ali Abbas',
+    priority: 'high',
+    signatureUrl: 'data:image/svg+xml;base64,PHN2Zy...',
+    signedAt: '2026-03-06T14:30:00Z',
+    customerVerified: true,
+    customerVerifiedAt: '2026-03-06T14:32:00Z',
+    notes: 'Delivered to manager on duty',
+    photoUrls: ['delivery_proof_014a.jpg', 'delivery_proof_014b.jpg'],
+    deliveredAt: '2026-03-06T14:30:00Z',
+    createdAt: '2026-03-06T08:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 33.7294, longitude: 73.0931 },
+    estimatedMinutes: 55,
+  },
+  {
+    deliveryId: 'del_015',
+    companyId: 'company_1',
+    assignmentId: 'asgn_015',
+    customerId: 'cust_015',
+    customerName: 'Rawalpindi Wholesale Hub',
+    customerAddress: { street: 'Raja Bazaar', city: 'Rawalpindi', state: 'Punjab', zipCode: '46000' },
+    customerPhone: '+92-51-4555678',
+    items: [
+      { itemId: 'spark_001', itemName: 'SparkClean Detergent 2kg', quantity: 50, description: 'Mega order' },
+      { itemId: 'spark_002', itemName: 'SparkClean Bleach 1L', quantity: 30, description: 'Bulk supply' },
+    ],
+    status: 'delivered',
+    deliveryPersonId: 'dp_004',
+    deliveryPersonName: 'Ali Abbas',
+    priority: 'normal',
+    signatureUrl: 'data:image/svg+xml;base64,AAAB...',
+    signedAt: '2026-03-06T16:00:00Z',
+    customerVerified: true,
+    customerVerifiedAt: '2026-03-06T16:02:00Z',
+    notes: 'All items checked by customer',
+    photoUrls: ['delivery_proof_015.jpg'],
+    deliveredAt: '2026-03-06T16:00:00Z',
+    createdAt: '2026-03-06T09:30:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 33.5651, longitude: 73.0169 },
+    estimatedMinutes: 50,
+  },
+  {
+    deliveryId: 'del_016',
+    companyId: 'company_1',
+    assignmentId: 'asgn_016',
+    customerId: 'cust_016',
+    customerName: 'Peshawar Trading Co',
+    customerAddress: { street: 'Qissa Khwani Bazaar', city: 'Peshawar', state: 'KPK', zipCode: '25000' },
+    customerPhone: '+92-91-2567890',
+    items: [
+      { itemId: 'dalda_002', itemName: 'Dalda Cooking Oil 5L', quantity: 15, description: 'KPK distribution' },
+      { itemId: 'aqua_002', itemName: 'AquaPure Water Dispenser', quantity: 5, description: 'Office installations' },
+    ],
+    status: 'delivered',
+    deliveryPersonId: 'dp_004',
+    deliveryPersonName: 'Ali Abbas',
+    priority: 'high',
+    signatureUrl: 'data:image/svg+xml;base64,CCCD...',
+    signedAt: '2026-03-06T12:45:00Z',
+    customerVerified: true,
+    customerVerifiedAt: '2026-03-06T12:48:00Z',
+    notes: 'Delivered to warehouse supervisor',
+    photoUrls: ['delivery_proof_016a.jpg', 'delivery_proof_016b.jpg'],
+    deliveredAt: '2026-03-06T12:45:00Z',
+    createdAt: '2026-03-06T06:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 34.0151, longitude: 71.5249 },
+    estimatedMinutes: 120,
+  },
+  {
+    deliveryId: 'del_017',
+    companyId: 'company_1',
+    assignmentId: 'asgn_017',
+    customerId: 'cust_017',
+    customerName: 'Bahria Town Superstore',
+    customerAddress: { street: 'Phase 4, Bahria Town', city: 'Rawalpindi', state: 'Punjab', zipCode: '46220' },
+    customerPhone: '+92-51-5789012',
+    items: [
+      { itemId: 'aqua_003', itemName: 'AquaPure Water Filter Cartridge', quantity: 20, description: 'Quarterly supply' },
+      { itemId: 'spark_003', itemName: 'SparkClean Dishwash Liquid 750ml', quantity: 35, description: 'Kitchen section' },
+      { itemId: 'dalda_001', itemName: 'Dalda Cooking Oil 1L', quantity: 18, description: 'Shelf restock' },
+    ],
+    status: 'delivered',
+    deliveryPersonId: 'dp_004',
+    deliveryPersonName: 'Ali Abbas',
+    priority: 'normal',
+    signatureUrl: 'data:image/svg+xml;base64,DDDE...',
+    signedAt: '2026-03-06T18:15:00Z',
+    customerVerified: true,
+    customerVerifiedAt: '2026-03-06T18:18:00Z',
+    notes: 'Store manager verified all items',
+    photoUrls: ['delivery_proof_017.jpg'],
+    deliveredAt: '2026-03-06T18:15:00Z',
+    createdAt: '2026-03-06T11:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 33.5230, longitude: 73.0880 },
+    estimatedMinutes: 65,
+  },
+
+  // ═══ FAILED — assigned to dp_005 (Kamran Malik) (2) ═══════
+  {
+    deliveryId: 'del_018',
+    companyId: 'company_1',
+    assignmentId: 'asgn_018',
+    customerId: 'cust_018',
+    customerName: 'Hyderabad Mini Market',
+    customerAddress: { street: 'Auto Bhan Road', city: 'Hyderabad', state: 'Sindh', zipCode: '71000' },
+    customerPhone: '+92-22-2781234',
+    items: [
+      { itemId: 'dalda_003', itemName: 'Dalda Banaspati Ghee 1kg', quantity: 12, description: 'Trial order' },
+      { itemId: 'spark_001', itemName: 'SparkClean Detergent 2kg', quantity: 8, description: 'Cleaning' },
+    ],
+    status: 'failed',
+    deliveryPersonId: 'dp_005',
+    deliveryPersonName: 'Kamran Malik',
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Shop was closed — tried 3 times, no response',
+    photoUrls: ['failed_attempt_018.jpg'],
+    deliveredAt: null,
+    createdAt: '2026-03-06T10:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 25.3960, longitude: 68.3578 },
+    estimatedMinutes: 70,
+  },
+  {
+    deliveryId: 'del_019',
+    companyId: 'company_1',
+    assignmentId: 'asgn_019',
+    customerId: 'cust_019',
+    customerName: 'Sukkur Provision Store',
+    customerAddress: { street: 'Near Lansdowne Bridge', city: 'Sukkur', state: 'Sindh', zipCode: '65200' },
+    customerPhone: '+92-71-5612345',
+    items: [
+      { itemId: 'aqua_001', itemName: 'AquaPure Mineral Water 1.5L (Pack of 6)', quantity: 35, description: 'Hot season prep' },
+      { itemId: 'aqua_003', itemName: 'AquaPure Water Filter Cartridge', quantity: 12, description: 'Filter replacements' },
+    ],
+    status: 'failed',
+    deliveryPersonId: 'dp_005',
+    deliveryPersonName: 'Kamran Malik',
+    priority: 'high',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Customer refused delivery — says order was cancelled',
+    photoUrls: [],
+    deliveredAt: null,
+    createdAt: '2026-03-06T12:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 27.7052, longitude: 68.8574 },
+    estimatedMinutes: 110,
+  },
+
+  // ═══ RETURNED — assigned to dp_002 (Hassan) (1) ═══════════
+  {
+    deliveryId: 'del_020',
+    companyId: 'company_1',
+    assignmentId: 'asgn_020',
+    customerId: 'cust_020',
+    customerName: 'Faisalabad Traders',
+    customerAddress: { street: 'D-Ground, Jaranwala Road', city: 'Faisalabad', state: 'Punjab', zipCode: '38000' },
+    customerPhone: '+92-41-8765432',
+    items: [
+      { itemId: 'dalda_001', itemName: 'Dalda Cooking Oil 1L', quantity: 10, description: 'Trial shipment' },
+      { itemId: 'spark_002', itemName: 'SparkClean Bleach 1L', quantity: 5, description: 'Sample batch' },
+    ],
+    status: 'returned',
+    deliveryPersonId: 'dp_002',
+    deliveryPersonName: 'Hassan Raza',
+    priority: 'normal',
+    signatureUrl: null,
+    signedAt: null,
+    customerVerified: false,
+    customerVerifiedAt: null,
+    notes: 'Customer says wrong items — returned full shipment',
+    photoUrls: ['return_020.jpg'],
+    deliveredAt: null,
+    createdAt: '2026-03-06T07:00:00Z',
+    originCoords: ORIGIN,
+    destinationCoords: { latitude: 31.4504, longitude: 73.1350 },
+    estimatedMinutes: 55,
+  },
+];
